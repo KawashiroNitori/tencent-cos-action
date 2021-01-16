@@ -22,12 +22,18 @@ if [ -z "$INPUT_BUCKET" ]; then
   exit 1
 fi
 
-if [ -z "$INPUT_REGION" ]; then
-  echo '::error::Required Region parameter'
+if [ -z "${INPUT_REGION}" ]; then
+  echo '::error::Required region parameter'
   exit 1
 fi
 
-coscmd config -a $INPUT_SECRET_ID -s $INPUT_SECRET_KEY -b $INPUT_BUCKET ${INPUT_REGION:+ -r $INPUT_REGION} ${INPUT_ENDPOINT:+ -e $INPUT_ENDPOINT} -m 30
+if [ -z "${INPUT_ENDPOINT}" ]; then
+  ENDPOINT_ARG="-r ${INPUT_REGION}"
+else
+  ENDPOINT_ARG="-e ${INPUT_ENDPOINT}"
+fi
+
+coscmd config -a $INPUT_SECRET_ID -s $INPUT_SECRET_KEY -b $INPUT_BUCKET $ENDPOINT_ARG -m 30
 
 IFS="&&"
 arrARGS=($INPUT_ARGS)
